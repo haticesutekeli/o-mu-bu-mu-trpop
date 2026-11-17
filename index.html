@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O mu Bu mu</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:'Baloo 2',system-ui,sans-serif;color:#fff;background:radial-gradient(circle at 20% 0%,#ff4fa3 0,transparent 45%),radial-gradient(circle at 100% 100%,#6a4cff 0,transparent 50%),#1a1030;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 14px 28px}
+h1{font-size:clamp(34px,7vw,60px);font-weight:800;letter-spacing:1px;line-height:1;text-shadow:0 4px 0 #ff2d87,0 8px 24px rgba(0,0,0,.4);text-align:center}
+.sub{opacity:.8;margin:6px 0 4px;font-size:clamp(14px,3.4vw,18px);text-align:center}
+.bar{width:min(560px,100%);height:10px;border-radius:99px;background:rgba(255,255,255,.15);margin:10px 0 4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd23f,#ff4fa3);transition:width .35s}
+.count{font-size:15px;opacity:.85;margin-bottom:14px}
+.arena{position:relative;width:min(900px,100%);display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,3vw,28px);align-items:start}
+.card{background:#fff;border:none;border-radius:22px;padding:8px 8px 10px;cursor:pointer;color:#2a1640;font:inherit;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent;width:100%}
+.card:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:0 16px 40px rgba(255,79,163,.45)}
+.card:nth-child(2):hover{transform:translateY(-4px) rotate(1deg)}
+.card:focus-visible{outline:4px solid #ffd23f;outline-offset:3px}
+.card .ph{width:100%;aspect-ratio:3/4;border-radius:16px;overflow:hidden;background:#eee}
+.card img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
+.card .nm{font-weight:800;font-size:clamp(17px,4.4vw,26px);margin-top:8px;line-height:1.1}
+.card .gr{display:inline-block;margin-top:4px;font-size:clamp(11px,2.8vw,14px);font-weight:600;padding:1px 10px;border-radius:99px;background:#f1e8ff;color:#6a4cff}
+.card .gr.solo{background:#fff1d6;color:#c77700}
+.card.win{transform:scale(1.04)!important;box-shadow:0 0 0 5px #ffd23f,0 16px 40px rgba(255,210,63,.5)}
+.card.lose{opacity:.25;transform:scale(.94)!important;filter:grayscale(1)}
+.card{transition:transform .25s,opacity .25s,filter .25s,box-shadow .25s}
+.vs{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:clamp(48px,11vw,74px);height:clamp(48px,11vw,74px);border-radius:50%;background:#ffd23f;color:#2a1640;font-weight:800;font-size:clamp(18px,4.5vw,28px);display:grid;place-items:center;box-shadow:0 0 0 5px #1a1030,0 6px 20px rgba(0,0,0,.4);pointer-events:none;z-index:2}
+.q{font-size:clamp(20px,5vw,30px);font-weight:800;margin:4px 0 14px;color:#ffd23f}
+.final{display:none;flex-direction:column;align-items:center;text-align:center;width:min(420px,100%)}
+.final .crown{font-size:56px;line-height:1;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.final .txt{font-size:clamp(20px,5vw,28px);font-weight:800;margin:6px 0 14px}
+.final .card{cursor:default;max-width:300px}
+.final .card:hover{transform:none;box-shadow:0 0 0 6px #ffd23f,0 16px 40px rgba(255,210,63,.5)}
+.final .card{box-shadow:0 0 0 6px #ffd23f,0 16px 40px rgba(255,210,63,.5)}
+.again{margin-top:22px;border:none;border-radius:99px;padding:12px 30px;font:inherit;font-weight:800;font-size:20px;background:linear-gradient(90deg,#ffd23f,#ff4fa3);color:#2a1640;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.again:active{transform:scale(.97)}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;border-radius:2px;pointer-events:none;animation:fall linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<h1>O mu Bu mu?</h1>
+<div id="game" style="display:contents">
+  <p class="sub">Sevdiğine dokun, diğeri elensin!</p>
+  <div class="bar"><i id="bar"></i></div>
+  <p class="count" id="count"></p>
+  <div class="arena" id="arena">
+    <button class="card" id="c0"><div class="ph"><img id="i0" alt=""></div><div class="nm" id="n0"></div><span class="gr" id="g0"></span></button>
+    <button class="card" id="c1"><div class="ph"><img id="i1" alt=""></div><div class="nm" id="n1"></div><span class="gr" id="g1"></span></button>
+    <div class="vs">VS</div>
+  </div>
+</div>
+<div class="final" id="final">
+  <div class="crown">👑</div>
+  <p class="txt">Senin en sevdiğin TRPOP üyesi…</p>
+  <div class="card"><div class="ph"><img id="wi" alt=""></div><div class="nm" id="wn"></div><span class="gr" id="wg"></span></div>
+  <button class="again" id="again">Tekrar Oyna</button>
+</div>
+<script>
+const ALL=[{"n": "Ada", "g": "KARMA", "i": "img/ada.jpeg"}, {"n": "Adilcan", "g": "KARMA", "i": "img/adilcan.jpeg"}, {"n": "Ahmet Emre", "g": "PERMA", "i": "img/ahmet-emre.jpeg"}, {"n": "Alperen", "g": "PERMA", "i": "img/alperen.jpeg"}, {"n": "Arda Aykut", "g": "VİBE", "i": "img/arda-aykut.jpeg"}, {"n": "Arda Soydoğan", "g": "CRUSH", "i": "img/arda-soydogan.jpeg"}, {"n": "Aslı", "g": "AURA", "i": "img/asli.jpeg"}, {"n": "Ayberk", "g": "VİBE", "i": "img/ayberk.jpeg"}, {"n": "Aydeed", "g": "", "i": "img/aydeed.jpeg"}, {"n": "Barış Yüksekkaya", "g": "CRUSH", "i": "img/baris-yuksekkaya.jpeg"}, {"n": "Batu Cengiz", "g": "CRUSH", "i": "img/batu-cengiz.jpeg"}, {"n": "Besti", "g": "", "i": "img/besti.jpeg"}, {"n": "Beytullah", "g": "VİBE", "i": "img/beytullah.jpeg"}, {"n": "Can Kesiktaş", "g": "PERMA", "i": "img/can-kesiktas.jpeg"}, {"n": "Cesuku", "g": "KARMA", "i": "img/cesuku.jpeg"}, {"n": "Delfin", "g": "MANTRA", "i": "img/delfin.jpeg"}, {"n": "Doğa", "g": "MANTRA", "i": "img/doga.jpeg"}, {"n": "Efe Şan", "g": "CRUSH", "i": "img/efe-san.jpeg"}, {"n": "Erdeniz", "g": "KARMA", "i": "img/erdeniz.jpeg"}, {"n": "Esin Bahat", "g": "MANİFEST", "i": "img/esin-bahat.jpeg"}, {"n": "Esra Mutlu", "g": "AURA", "i": "img/esra-mutlu.jpeg"}, {"n": "Ezgi", "g": "KARMA", "i": "img/ezgi.jpeg"}, {"n": "Güniz", "g": "MANTRA", "i": "img/guniz.jpeg"}, {"n": "Hilal Yelekçi", "g": "MANİFEST", "i": "img/hilal-yelekci.jpeg"}, {"n": "İbrahim", "g": "RADİKAL", "i": "img/ibrahim.jpeg"}, {"n": "İsmail Akın", "g": "VİBE", "i": "img/ismail-akin.jpeg"}, {"n": "Kemal Oruç", "g": "VİBE", "i": "img/kemal-oruc.jpeg"}, {"n": "Lidya Pınar", "g": "MANİFEST", "i": "img/lidya-pinar.jpeg"}, {"n": "Meri", "g": "AURA", "i": "img/meri.jpeg"}, {"n": "Milan Önder", "g": "CRUSH", "i": "img/milan-onder.jpeg"}, {"n": "Mina Solak", "g": "MANİFEST", "i": "img/mina-solak.jpeg"}, {"n": "Miraç Fırat", "g": "CRUSH", "i": "img/mirac-firat.jpeg"}, {"n": "Oğuzhan Çiftçi", "g": "CRUSH", "i": "img/oguzhan-ciftci.jpeg"}, {"n": "Sıla Nisa", "g": "MANTRA", "i": "img/sila-nisa.jpeg"}, {"n": "Sueda Uluca", "g": "MANİFEST", "i": "img/sueda-uluca.jpeg"}, {"n": "Suzy", "g": "AURA", "i": "img/suzy.jpeg"}, {"n": "Vedat Çelik", "g": "RADİKAL", "i": "img/vedat-celik.jpeg"}, {"n": "Yusuf Emre", "g": "RADİKAL", "i": "img/yusuf-emre.jpeg"}, {"n": "Yuşa Akbıyık", "g": "RADİKAL", "i": "img/yusa-akbiyik.jpeg"}, {"n": "Zeki Arkun", "g": "", "i": "img/zeki-arkun.jpeg"}, {"n": "Zoktay", "g": "MANİFEST", "i": "img/zoktay.jpeg"}, {"n": "Özlem", "g": "KARMA", "i": "img/ozlem.jpeg"}, {"n": "Ümit Sönmezler", "g": "VİBE", "i": "img/umit-sonmezler.jpeg"}, {"n": "Şeyma", "g": "MANTRA", "i": "img/seyma.jpeg"}];
+const TOTAL=ALL.length;
+let pool,pair,busy=false;
+const $=id=>document.getElementById(id);
+ALL.forEach(p=>{const im=new Image();im.src=p.i;});
+function rnd(n){return Math.floor(Math.random()*n)}
+function setCard(k,p){
+  $('i'+k).src=p.i;$('i'+k).alt=p.n;$('n'+k).textContent=p.n;
+  const g=$('g'+k);g.textContent=p.g||'SOLO';g.className='gr'+(p.g?'':' solo');
+  $('c'+k).className='card';
+}
+function next(){
+  if(pool.length===1)return finish(pool[0]);
+  let a=rnd(pool.length),b;do{b=rnd(pool.length)}while(b===a);
+  pair=[pool[a],pool[b]];
+  setCard(0,pair[0]);setCard(1,pair[1]);
+  const elim=TOTAL-pool.length;
+  $('bar').style.width=(elim/(TOTAL-1)*100)+'%';
+  $('count').textContent='Kalan: '+pool.length+' kişi · Tur '+(elim+1)+' / '+(TOTAL-1);
+  busy=false;
+}
+function pick(k){
+  if(busy)return;busy=true;
+  const loser=pair[1-k];
+  $('c'+k).classList.add('win');$('c'+(1-k)).classList.add('lose');
+  pool=pool.filter(p=>p!==loser);
+  setTimeout(next,450);
+}
+function finish(w){
+  $('game').style.display='none';$('final').style.display='flex';window.scrollTo(0,0);
+  $('wi').src=w.i;$('wi').alt=w.n;$('wn').textContent=w.n;
+  const g=$('wg');g.textContent=w.g||'SOLO';g.className='gr'+(w.g?'':' solo');
+  confetti();
+}
+function confetti(){
+  const cs=['#ffd23f','#ff4fa3','#6a4cff','#3fe0ff','#fff'];
+  for(let i=0;i<80;i++){const d=document.createElement('div');d.className='confetti';
+    d.style.left=Math.random()*100+'vw';d.style.background=cs[i%cs.length];
+    d.style.animationDuration=(2+Math.random()*2.5)+'s';d.style.animationDelay=(Math.random()*.8)+'s';
+    document.body.appendChild(d);setTimeout(()=>d.remove(),5500);}
+}
+function start(){
+  pool=ALL.slice();
+  $('final').style.display='none';$('game').style.display='contents';
+  next();
+}
+$('c0').onclick=()=>pick(0);$('c1').onclick=()=>pick(1);
+$('again').onclick=start;
+start();
+</script>
+</body>
+</html>
